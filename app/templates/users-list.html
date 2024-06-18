@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Список пользователей{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Список пользователей</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Логин</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Отчество</th>
+                    <th scope="col">Дата создания</th>
+                    <th scope="col">Роль</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ user.login }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.middle_name }}</td>
+                    <td>{{ user.created_at }}</td>
+                    <td>{{ user.role_name or 'Нет роли' }}</td>
+                    {% if current_user.is_authenticated %}
+                        <td class="d-flex justify-content-end">
+                            {% if current_user.can('update', user) %}
+                                <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="btn btn-primary me-2">Редактировать пользователя</a>
+                            {% endif %}
+
+                            {% if current_user.can('delete') %}
+                                <a class="btn btn-danger" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#delete-modal" 
+                                data-delete-url="{{ url_for('users.delete_user', user_id=user.id) }}" 
+                                data-full-name="{{ user.last_name }} {{ user.first_name }} {{ user.middle_name }}">
+                                    Удалить пользователя
+                                </a>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if current_user.is_authenticated and current_user.can('create') %}
+            <a href="{{ url_for('users.create_user') }}" class="btn btn-primary mb-3">Создать пользователя</a>
+        {% endif %}
+    </div>
+    <div class="modal" id="delete-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <form action="" method="post">
+                        <button type="submit" class="btn btn-danger">Да</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='delete-user.js') }}"></script>
+{% endblock %}

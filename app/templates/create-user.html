@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Создание пользователя{% endblock %}
+
+{% from 'user-macros.html' import user_form %}
+
+{% block content %}
+    <h1 class="mt-4">Создание пользователя</h1>
+    {{ user_form(current_user, 'create', roles, errors, user) }}
+{% endblock %}

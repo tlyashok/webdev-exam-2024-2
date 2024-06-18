@@ -1,0 +1,102 @@
+{% macro user_form(current_user, action, roles, errors, user=None) %}
+    <div class="container">
+        <form method="post">
+            {% if action == 'create' %}
+                <div class="mb-3">
+                    <label for="login" class="form-label">Логин</label>
+                    <input 
+                        type="text" 
+                        class="form-control {% if errors and 'login_format' in errors %}is-invalid{% endif %}" 
+                        id="login" 
+                        name="login" 
+                        {% if user %}value="{{ user.login }}"{% endif %} 
+                        required
+                    >
+                    {% if errors and 'login_format' in errors %}
+                        <div class="invalid-feedback">{{ errors['login_format'] }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input 
+                        type="password" 
+                        class="form-control {% if errors and 'password' in errors%}is-invalid{% endif %}"
+                        id="password" 
+                        name="password" 
+                        required
+                    >
+                    {% if errors %}
+                        {% if 'password' in errors %}
+                            <div class="invalid-feedback">{{ errors['password'] }}</div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <label for="first_name" class="form-label">Имя</label>
+                <input 
+                    type="text" 
+                    class="form-control {% if errors and 'first_name_required' in errors %}is-invalid{% endif %}" 
+                    id="first_name" 
+                    name="first_name" 
+                    {% if user %}value="{{ user.first_name }}"{% endif %} 
+                    required
+                >
+                {% if errors and 'first_name_required' in errors %}
+                    <div class="invalid-feedback">{{ errors['first_name_required'] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Фамилия</label>
+                <input 
+                    type="text" 
+                    class="form-control {% if errors and 'last_name_required' in errors %}is-invalid{% endif %}" 
+                    id="last_name" 
+                    name="last_name" 
+                    {% if user %}value="{{ user.last_name }}"{% endif %} 
+                    required
+                >
+                {% if errors and 'last_name_required' in errors %}
+                    <div class="invalid-feedback">{{ errors['last_name_required'] }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="middle_name" class="form-label">Отчество</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="middle_name" 
+                    name="middle_name" 
+                    {% if user %}value="{{ user.middle_name }}"{% endif %}
+                >
+            </div>
+            {% if current_user.is_authenticated and current_user.can('assign_roles') %}
+                <div class="mb-3">
+                    <label for="role_id" class="form-label">Роль</label>
+                        <select 
+                            class="form-select {% if errors and 'role_id_required' in errors %}is-invalid{% endif %}" 
+                            id="role_id" 
+                            name="role_id" 
+                            required
+                        >
+                            {% for role in roles %}
+                                <option 
+                                    value="{{ role['id'] }}" 
+                                    {% if user and user.role_id|string == role['id']|string %}selected{% endif %}
+                                >
+                                    {{ role['name'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% if errors and 'role_id_required' in errors %}
+                        <div class="invalid-feedback">{{ errors['role_id_required'] }}</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">
+                {% if action=='create' %}Создать{% else %}Изменить данные пользователя{% endif %}
+            </button>
+        </form>
+    </div>
+{% endmacro %}

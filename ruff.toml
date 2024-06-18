@@ -1,0 +1,10 @@
+[lint]
+select = ["ALL"]
+ignore = ["D", "ANN", "ARG001", "S", "INP", "PLR", "RUF", "PTH"]
+
+[lint.flake8-quotes]
+inline-quotes = "single"
+
+[format]
+quote-style = "single" 
+docstring-code-format = true

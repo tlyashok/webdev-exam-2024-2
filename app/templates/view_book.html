@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">{{ book.title }}</h1>
+        <div class="mb-4">
+            <img src="{{ url_for('static', filename='images/' ~ book.cover_image) }}" alt="{{ book.title }}" class="img-fluid">
+        </div>
+        <p><strong>Жанры:</strong> {{ book.genres }}</p>
+        <p><strong>Год:</strong> {{ book.year }}</p>
+        <p><strong>Описание:</strong> {{ book.short_description | safe }}</p>
+        <h2 class="mt-5">Рецензии</h2>
+        <ul class="list-group mb-4">
+            {% for review in reviews %}
+                <li class="list-group-item">
+                    <strong>{{ review.user_name }}</strong> - <span>Оценка: {{ review.rating }}</span>
+                    <p class="mt-2">{{ review.review_text | safe }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+        {% if current_user.is_authenticated and current_user.role_id in [1, 2, 3] and not has_user_reviewed %}
+            <a href="{{ url_for('write_review', book_id=book.id) }}" class="btn btn-primary">Написать рецензию</a>
+        {% endif %}
+    </div>
+{% endblock %}
