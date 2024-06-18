@@ -1,6 +1,5 @@
 import os
 
-import bleach
 import config
 from flask import (
     Flask,
@@ -178,9 +177,11 @@ def create_book():
                                        'VALUES (%s, %s)',
                                        (book_id, genre_id))
                     conn.commit()  # Одно подтверждение транзакции
-
-            flash('Книга успешно добавлена.')
-            return redirect(url_for('index'))
+                    flash('Книга успешно добавлена.')
+                    return redirect(url_for('index'))
+            else:
+                flash('Невозможно добавить книгу без обложки')
+                return redirect(url_for('create_book'))
         except Exception as e:
             flash(f'Произошла ошибка: {e}')
             return redirect(url_for('create_book'))
@@ -313,8 +314,6 @@ def write_review(book_id):
     if request.method == 'POST':
         rating = request.form['rating']
         review_text = request.form['text']
-
-        review_text = bleach.clean(review_text)
 
         conn = db_connector.connect()
         cursor = conn.cursor()
